@@ -11,10 +11,13 @@ class Config(object):
         'sqlite:///' + os.path.join(basedir, 'app.db')  # backup that configures a databas named 'app.db' in parent directory (basedir)
     SQLALCHEMY_TRACK_MODIFICATIONS = False  # disables tracking changes
 
-    # set-up emailing errors
+    # set-up emailing errors and email password reset functionality
     MAIL_SERVER = os.environ.get('MAIL_SERVER')  # set server
     MAIL_PORT = int(os.environ.get('MAIL_PORT') or 25)  # set port
     MAIL_USE_TLS = os.environ.get('MAIL_USE_TLS') is not None  # use encrypted connections
     MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
     MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
     ADMINS = ['yoonphilip99@gmail.com']
+
+    # set-up language support
+    LANGUAGES= ['en', 'ko']

@@ -1,11 +1,13 @@
 '''
-models.py: define relation models, password implementation, avatars
+models.py: define User and Post models, implements follower relationship
 '''
-
 from datetime import datetime
-from app import db, login
+from app import db, login, app
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin  # includes generic implementations for user model classes
+from time import time
+from hashlib import md5
+import jwt
 
 # creating association table to integrate follower relationship
 followers = db.Table('followers',
@@ -54,6 +56,23 @@ class User(UserMixin, db.Model):  # User class inherits from db.Model, base clas
             ).filter(followers.c.follower_id == self.id)  # filter out posts from users self isn't following
         own = Post.query.filter_by(user_id=self.id) # get own posts
         return others.union(own).order_by(Post.timestamp.desc())  # sort posts by time in descending order
+
+    def avatar(self, size):
+        digest = md5(self.email.lower().encode('utf-8')).hexdigest()
+        return 'https://www.gravatar.com/avatar/{}?d=identicon&s={}'.format(
+            digest, size)
+
+    def get_reset_password_token(self, expires_in=600):  # reset token expires in 10 minutes
+        return jwt.encode({'reset_password': self.id, 'exp':time() + expires_in},
+            app.config['SECRET_KEY'], algorithm='HS256').decode('utf-8')  # decode's the byte sequence token as a string for conveniency
+
+    @staticmethod  # can be invoked directly from class
+    def verify_reset_password_token(token):
+        try:  # if token is valid, value of reset_password key from token is ID of user, so can load the user and return it
+            id = jwt.decode(token, app.config['SECRET_KEY'], algorithms=['HS256'])['reset_password']
+        except:  # if token is invalid or is expired
+            return None
+        return User.query.get(id)
 
 class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)

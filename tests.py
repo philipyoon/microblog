@@ -1,16 +1,26 @@
-from datetime import datetime, timedelta
 import unittest
-from app import app, db
+from datetime import datetime, timedelta
+from config import Config
+from app import create_app, db
 from app.models import User, Post
+
+class TestConfig(Config):
+    TESTING = True  # config variable to check if app is testing or not
+    SQLALCHEMY_DATABASE_URI = 'sqlite://'\
+    ELASTICSEARCH_UR = None
 
 class UserModelTest(unittest.TestCase):
     # Python unittest allows you to define setUp() and tearDown() methods which gets performed before and after each test method
     def setUp(self):
-        app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite://'  # using 'sqlite://' creates a new in-memory SQLite database, not existing database
+        self.app = create_app(TestConfig)
+        self.app_context = self.app.app_context
+        self.app_context.push()
         db.create_all()  # create all database table
+
     def tearDown(self):
         db.session.remove()  # in config.py SQLALCHEMY_COMMIT_ON_TEARDOWN is set to True, so if not for calling this function changes would be auto-committed
         db.drop_all()
+        self.app_context.pop()
 
     def test_password_hashing(self):
         philip = User(username='philip')

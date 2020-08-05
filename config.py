@@ -1,5 +1,8 @@
 import os
+from dotenv import load_dotenv
+
 basedir = os.path.abspath(os.path.dirname(__file__))  # absolute path of directory where this config.py module resides
+load_dotenv(os.path.join(basedir, '.env'))
 
 class Config(object):
     # good practice to set configuration from environment variables
@@ -19,5 +22,5 @@ class Config(object):
     MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
     ADMINS = ['yoonphilip99@gmail.com']
 
-    # set-up language support
-    LANGUAGES= ['en', 'ko']
+    # connection with Elasticsearch service
+    ELASTICSEARCH_URL = os.environ.get('ELASTICSEARCH_URL')

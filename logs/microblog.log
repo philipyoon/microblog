@@ -42,3 +42,4 @@
 %(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]
 %(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]
 %(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]
+%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]

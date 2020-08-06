@@ -24,3 +24,6 @@ class Config(object):
 
     # connection with Elasticsearch service
     ELASTICSEARCH_URL = os.environ.get('ELASTICSEARCH_URL')
+
+    # specify log to stdout for heroku
+    LOG_TO_STDOUT = os.environ.get('LOG_TO_STDOUT')

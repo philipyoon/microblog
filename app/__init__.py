@@ -43,34 +43,25 @@ def create_app(config_class=Config):  # creates flask application instance
     app.register_blueprint(main_bp)
 
     if not app.debug and not app.testing:  # only send logs when debug and testing mode is off
-        if app.config['MAIL_SERVER']:  # email logs if MAIL_SERVER is set up
-            auth = None
-            if app.config['MAIL_USERNAME'] or app.config['MAIL_PASSWORD']:
-                auth = (app.config['MAIL_USERNAME'], app.config['MAIL_PASSWORD'])
-            secure = None
-            if app.config['MAIL_USE_TLS']:
-                secure = ()
-            mail_handler = SMTPHandler(
-                mailhost = (app.config['MAIL_SERVER'], app.config['MAIL_PORT']),
-                fromaddr = 'no-reply@' + app.config['MAIL_SERVER'],
-                toaddrs = app.config['ADMINS'], subject = 'Microblog Failure',
-                credentials = auth, secure = secure)
-            mail_handler.setLevel(logging.ERROR)  # only reports errors not warnings
-            app.logger.addHandler(mail_handler)  # attach SMTPHandler instance to app.logger object from Flask
-
-        # implementing logging to files
-        if not os.path.exists('logs'):
-            os.mkdir('logs')
-        file_handler = RotatingFileHandler('logs/microblog.log', maxBytes=10240,
-            backupCount=10)  # max size of 10kB and backup last 10 logs
-        file_handler.setFormatter(
-            '%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]')  # set format of logs
-        file_handler.setLevel(logging.INFO)  # logs INFO level and below
-        app.logger.addHandler(file_handler)  # attatch RotatingFileHandler instance to app.logger object from Flask
+        if app.config['LOG_TO_STDOUT']:  # logs to stdout if setup in config
+            stream_handler = logging.StreamHandler()
+            stream_handler.setLevel(logging.INFO)
+            app.logger.addHandler(stream_handler)
+        else:
+            # logging to files
+            if not os.path.exists('logs'):
+                os.mkdir('logs')
+            file_handler = RotatingFileHandler('logs/microblog.log',
+                                               maxBytes=10240, backupCount=10)
+            file_handler.setFormatter(logging.Formatter(
+                '%(asctime)s %(levelname)s: %(message)s '
+                '[in %(pathname)s:%(lineno)d]'))
+            file_handler.setLevel(logging.INFO)
+            app.logger.addHandler(file_handler)
 
         app.logger.setLevel(logging.INFO)
         app.logger.info('Microblog startup')
 
     return app
-
+        
 from app import models  # imported on bottom to avoid circular imports

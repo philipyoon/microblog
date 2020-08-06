@@ -11,4 +11,4 @@ Followed [Miguel Grinberg's Blog](https://blog.miguelgrinberg.com/index) to crea
   - Database migration support with Alembic 
 - Full-text search implemented with Elasticsearch, using service provider Searchbox
 - Front end was done with basic HTML templates and CSS framework Bootstrap
-- Secure email password reset using JSON web tokens 
+- Secure email password reset using JSON web tokens (albeit email server not configured yet)
